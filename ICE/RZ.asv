@@ -1,12 +1,10 @@
 clear;
+
 bits = [0,1,0,0,1];
 
+bit_rate=1;
 prompt = 'What is the voltage? ';
 voltage = input(prompt);
-
-prompt = 'What is the bit_rate? ';
-bit_rate = input(prompt);
-
 frequency = 1000;
 sign = 1;
 
@@ -54,7 +52,9 @@ st=1;
 tmp=1*sign;
 for j=1:length(time)
     dm = y_value(j)/voltage;
+    
     if time(j)*bit_rate>=i
+        
         if mod(in,2)==1
             if dm ==tmp
                 ans_bits(st)=0;
@@ -69,8 +69,6 @@ for j=1:length(time)
     end
 end
 
-title('RZ');
-disp('Orginal bits : ')
 disp(bits);
 disp('Demodulation : ');
 disp(ans_bits);
