@@ -7,7 +7,7 @@ int main()
     cin>>s;
     transform(s.begin(),s.end(),s.begin(),::tolower);
 
-    if(s[0]>='a' && s[0]<='o')
+    if(s[0]>='a' && s[0]<='o' && s[2] != '_')
     {
         int cnt = 0, len = s.size();
         for(int i=0; i<len; i++)
