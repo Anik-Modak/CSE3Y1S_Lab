@@ -16,3 +16,4 @@ endfor
 disp(w);
 index = 0:1:N;
 plot(index, w);
+title('Hamming Window');
