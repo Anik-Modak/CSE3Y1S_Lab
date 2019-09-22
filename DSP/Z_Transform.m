@@ -1,16 +1,18 @@
-clear;
+clc;
+close all;
 
-x=[1,3,5,7,9];
+z = sym('Z');
+x = input("Enter the sequence x(n): ");
+id = input("Enter the starting index: ");
+len = id + length(x) - 1;
 
+n = 1;
 result = 0;
-z = sym('z');
+for i = id : len
+  result = result + x(n)*(z^(-i));
+  n = n + 1;
+endfor
 
-for i = 0 : length(x) - 1
-    result = result + x(i+1) * z^(-i);
-end;
-
-disp('Displying output without building function: ');
+disp('Displying output Z-transform of x(n): ');
 disp(result);
-z = ztrans(result);
-
 
