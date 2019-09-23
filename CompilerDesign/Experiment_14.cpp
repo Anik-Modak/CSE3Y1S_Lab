@@ -27,9 +27,12 @@ int main()
     scanf("%d",&n);
 
     char c, ch;
-    printf("Enter the productions: ");
     for(int i=0; i<n; i++)
+    {
+        printf("Enter the productions: ");
         scanf("%s%c",a[i],&ch);
+    }
+
     do
     {
         m=0;

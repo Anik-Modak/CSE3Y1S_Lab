@@ -3,10 +3,11 @@
 using namespace std;
 
 string keyword[35] = {"auto","double","int","struct","break","else","long",
-                     "switch","case","enum","register","typedef","char",
-                     "extern","return","union","const","float","short",
-                     "unsigned","continue","for","signed","void","default",
-                     "goto","sizeof","voltile","do","if","static","while","bool"};
+                      "switch","case","enum","register","typedef","char",
+                      "extern","return","union","const","float","short",
+                      "unsigned","continue","for","signed","void","default",
+                      "goto","sizeof","voltile","do","if","static","while","bool"
+                     };
 
 bool isArithmetic( string ch)
 {
@@ -54,6 +55,24 @@ bool identifier(string s)
     return 0;
 }
 
+int number(string s)
+{
+    int ck = 0, cnt = 0, len = s.size();
+    for(int i=0; i<len; i++)
+    {
+        if(isdigit(s[i]))
+            cnt++;
+        if(s[i]=='.')
+            ck ++;
+    }
+
+    if(cnt==len)
+        return 1;
+    if(ck==1 && cnt==len-1)
+        return 2;
+    return 0;
+}
+
 int main()
 {
     freopen("Experiment8.cpp","r",stdin);
@@ -80,8 +99,16 @@ int main()
                 if (s == keyword[i])
                     ck = 1;
             }
+
             if (ck == 1)
                 cout<<"Keyword"<<endl;
+            else if(ck = number(s))
+            {
+                if(ck==1)
+                    cout<<"Integer"<<endl;
+                else
+                    cout<<"Float"<<endl;
+            }
             else if(identifier(s))
                 cout<<"identifier"<<endl;
             else

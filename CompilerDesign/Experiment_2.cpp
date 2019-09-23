@@ -34,7 +34,6 @@ int main()
     cout<<con<<endl;
 
     //(c)
-
     vector<string> vo, co;
     stringstream s(str);
     while(s>>str)
