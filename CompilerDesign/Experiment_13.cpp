@@ -11,10 +11,11 @@ bool isArithmetic(char ch)
 
 bool check(string s)
 {
+    stack<char>st;
     int cnt = 0, len = s.size();
     for(int i=0; i<len-1; i++)
     {
-        if(isArithmetic(s[i]) && isArithmetic(s[i+1]))
+        if(isArithmetic(s[i]) && ( s[i+1] == ')' || isArithmetic(s[i+1])))
             return 0;
         if(s[i]=='(' && (s[i+1]==')'|| isArithmetic(s[i+1])))
             return 0;
@@ -22,35 +23,71 @@ bool check(string s)
             return 0;
 
         if(s[i]=='(')
-            cnt++;
+            st.push('(');
+
         if(s[i]==')')
-            cnt--;
+        {
+            if(st.empty())
+                return 0;
+            st.pop();
+        }
     }
 
     if(s[len-1]=='(')
-        cnt++;
+        st.push('(');
     if(s[len-1]==')')
-        cnt--;
+    {
+        if(st.empty())
+            return 0;
+        st.pop();
+    }
 
-    if(cnt)
-        return 0;
-    return 1;
+    if(st.empty())
+        return 1;
+    return 0;
+}
+
+bool identifier(string s)
+{
+    int d = 0, len = s.size();
+    for(int i=0; i<len; i++)
+        if(isdigit(s[i]))
+            d++;
+
+    if(isalpha(s[0]) || s[0]=='_')
+        return 1;
+    else if(d == len)
+        return 1;
+    return 0;
 }
 
 int main()
 {
-    string s;
-    cout<<"Enter a string: "; cin>>s;
+    string s, tmp;
+    cout<<"Enter a string: ";
+    cin>>s;
 
-    int len = s.size(), cnt = 0;
-    for(int i=0; i<len; i++)
+    int len = s.size(), cnt = 0, ck = 1;
+    for(int i=0; i<len && ck; i++)
     {
-        if(isArithmetic(s[i]) || isalpha(s[i]) || isdigit(s[i]) || s[i]=='(' || s[i]==')')
+        if(isArithmetic(s[i]) || s[i]=='(' || s[i]==')')
+        {
+            if(!tmp.empty() && ck)
+                ck = identifier(tmp);
             cnt++;
+            tmp.clear();
+        }
+        else if(isalpha(s[i]) || isdigit(s[i]) || s[i]=='_')
+        {
+            tmp.push_back(s[i]);
+            cnt++;
+        }
     }
 
-    //cout<<len<<" "<<cnt<<endl;
-    if(len != cnt)
+    if(!tmp.empty() && ck)
+        ck = identifier(tmp);
+
+    if(len != cnt || ck == 0)
     {
         cout<<"Output: INVALID\n";
         return 0;

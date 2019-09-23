@@ -40,6 +40,20 @@ bool isLogical( string ch)
         return false;
 }
 
+bool identifier(string s)
+{
+    if(isalpha(s[0]) || s[0]=='_')
+    {
+        int cnt = 0, len = s.size();
+        for(int i=0; i<len; i++)
+            if(isdigit(s[i]) || isalpha(s[i]) || s[i]=='_')
+                cnt++;
+        if(cnt==len)
+            return 1;
+    }
+    return 0;
+}
+
 int main()
 {
     freopen("Experiment8.cpp","r",stdin);
@@ -68,6 +82,8 @@ int main()
             }
             if (ck == 1)
                 cout<<"Keyword"<<endl;
+            else if(identifier(s))
+                cout<<"identifier"<<endl;
             else
                 cout<<"Invalid Input"<<endl;
         }

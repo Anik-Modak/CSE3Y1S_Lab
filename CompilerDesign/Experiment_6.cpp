@@ -5,7 +5,7 @@ int main()
 {
     string s;
     cin>>s;
-    transform(s.begin(),s.end(),s.begin(),::tolower);
+    //transform(s.begin(),s.end(),s.begin(),::tolower);
 
     if((s[0]>='c' && s[1]<='h') && s[2]=='_')
     {
@@ -16,7 +16,7 @@ int main()
                 cnt++;
         }
 
-        if(cnt==len)
+        if(cnt==len && cnt > 3)
             cout<<"Character Variable"<<endl;
         else
             cout<<"Invalid Input"<<endl;
@@ -30,7 +30,7 @@ int main()
                 cnt++;
         }
 
-        if(cnt==len)
+        if(cnt==len && cnt > 3)
             cout<<"Binary Variable"<<endl;
         else
             cout<<"Invalid Input"<<endl;
@@ -44,7 +44,7 @@ int main()
                 cnt++;
         }
 
-        if(cnt==len)
+        if(s[0]=='0' && cnt==len && cnt > 1)
             cout<<"Binary Number"<<endl;
         else
             cout<<"Invalid Input"<<endl;
