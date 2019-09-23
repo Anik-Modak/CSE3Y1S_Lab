@@ -1,36 +1,64 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-bool isOper(char s)
+bool isArithmetic(char ch)
 {
-    if(s=='+' || s=='-' || s=='*' || s=='/')
-        return true;
-    return false;
+    if (ch == '+' || ch == '-' || ch == '*' || ch == '/')
+        return true ;
+    else
+        return false ;
 }
 
-bool validity(char *str)
+bool check(string s)
 {
-    for(int i=1; str[i]; i+=2)
+    int cnt = 0, len = s.size();
+    for(int i=0; i<len-1; i++)
     {
-        char opr = str[i], opd = str[i+1];
-        if(!isdigit(opd))
+        if(isArithmetic(s[i]) && isArithmetic(s[i+1]))
             return 0;
-        if(isOper(opr))
-            continue;
-        else
+        if(s[i]=='(' && (s[i+1]==')'|| isArithmetic(s[i+1])))
             return 0;
+        if(s[i]==')' && (s[i+1]=='('|| isalpha(s[i+1]) || isdigit(s[i+1])))
+            return 0;
+
+        if(s[i]=='(')
+            cnt++;
+        if(s[i]==')')
+            cnt--;
     }
+
+    if(s[len-1]=='(')
+        cnt++;
+    if(s[len-1]==')')
+        cnt--;
+
+    if(cnt)
+        return 0;
     return 1;
 }
 
 int main()
 {
-    char s[1000];
-    gets(s);
+    string s;
+    cout<<"Enter a string: "; cin>>s;
 
-    if(validity(s))
-        printf("VALID\n");
+    int len = s.size(), cnt = 0;
+    for(int i=0; i<len; i++)
+    {
+        if(isArithmetic(s[i]) || isalpha(s[i]) || isdigit(s[i]) || s[i]=='(' || s[i]==')')
+            cnt++;
+    }
+
+    //cout<<len<<" "<<cnt<<endl;
+    if(len != cnt)
+    {
+        cout<<"Output: INVALID\n";
+        return 0;
+    }
+
+    if(check(s))
+        cout<<"Output: VALID\n";
     else
-        printf("INVALID\n");
+        cout<<"Output: INVALID\n";
     return 0;
 }

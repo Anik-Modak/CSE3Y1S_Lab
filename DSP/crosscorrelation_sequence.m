@@ -8,7 +8,7 @@ fliplr(y);
 n = length(x) + length(y)-1;
 x=[x zeros(1,n-length(x))];
 y=[y zeros(1,n-length(y))];
-r=zeros(1,n);
+r=zeros(1, n);
 
 for i=1 : n
     for j=1 : i

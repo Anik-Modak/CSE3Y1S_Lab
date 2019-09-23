@@ -18,7 +18,7 @@ disp(real(x1));
 n = 0:N-1;
 subplot(2,1,1);
 stem(n, real(x1));
-title('Inverse DFT x(n)');
+title('Inverse DFT x1(n)');
 
 x2 = real(ifft(X));
 disp('Inverse DFT x2(n): ');
@@ -26,7 +26,7 @@ disp(x2);
 
 subplot(2,1,2);
 stem(n, x2);
-title('Inverse DFT x(n)');
+title('Inverse DFT x2(n)');
 
 
 
