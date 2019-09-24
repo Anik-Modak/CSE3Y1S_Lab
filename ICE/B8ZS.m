@@ -1,73 +1,86 @@
+clc;
 clear;
-bits = [1 0 0 0 0 0 0 0 0 0 0];
+close all;
 
-prompt = 'What is the voltage? ';
-voltage = input(prompt);
+bits = [ 1 1 0 0 0 0 0 0 0 0 0 0 0 1];
+amp = input("Enter the amplitude: ");
+bit_rate = input("Enter the bit_rate: ");
 
-sign = 1;
-tmp = voltage;
+pre_vol = 1;
+voltage = pre_vol * amp;
 len = length(bits);
-time = 0 : len;
+Time = len/bit_rate;
+sampling_frquency = 10000;
 
-cnt = 0;
-for i = 1 : len
-    if(bits(i)== 0)
-        cnt = cnt + 1;
-        if(cnt == 8)
-            bits(i) = -1;
-            cnt = 0;
-        end
+zero = 0;
+one = 0;
+for i = 1:len
+    if bits(i) == 0
+        zero = zero + 1;
     else
-        cnt = 0;
+        one = one + 1;
+        zero = 0;
+    end
+    
+    if zero > 7
+        y_level(i-4) = voltage;
+        y_level(i-3) = -voltage;
+        y_level(i-1) = -voltage;
+        y_level(i) = voltage;
+        zero = 0;
+    elseif bits(i)==0
+        y_level(i) = 0;
+    else 
+        y_level(i) = -voltage;
+        voltage = y_level(i);
     end
 end
+  
+%Modulation
+time = 0: 1/sampling_frquency:Time;
+x = 1;
+for i = 1:length(time)
+  result(i) = y_level(x);
+  if bit_rate * time(i) >= x;
+    x = x + 1;
+  end
+end
 
-voltage = tmp*sign;
-pbit = [0 0 0 tmp -tmp 0 -tmp tmp];
-nbit = [0 0 0 -tmp tmp 0 tmp -tmp];
-result = zeros(len+1, 1);
+plot(time, result, 'Linewidth', 2);
+axis([0 Time -amp*2 amp*2]);
+grid on;
+title('B8Z3');
 
-i = 1;
-while(i <= len)
-    if(bits(i)==1)
-        result(i) = voltage;
-        voltage = -voltage;
-    elseif(bits(i)==0)
-        result(i) = 0;
+%Demodulation
+x = 1;
+for i = 1:length(time)
+  if bit_rate * time(i) >= x
+    tmp = result(i)/amp;
+    if tmp == 0
+      ans_bits(x) = 0;
     else
-        bits(i) = 0;
-        if(voltage > 0)
-            result(i-7:i) = nbit;
-        else
-            result(i-7:i) = pbit;
-        end
+      if tmp==pre_vol    
+          ans_bits(x+1) = 0;
+          ans_bits(x+2) = 0;
+          ans_bits(x+3) = 0;
+          ans_bits(x+4) = 0;
+          x = x + 4;
+      else
+          ans_bits(x) = 1;
+          pre_vol = tmp;
+      end 
     end
-    i = i + 1;
+    x = x + 1;
+  end
 end
 
-stairs(time, result);
-axis([0 len -tmp*2 tmp*2]);
-
-%decoding
-de_bits = zeros(1,len);
-tmp = -1;
-id  = 0;
-
-i = 1;
-while(i <= len)
-    if tmp == result(i)
-        tmp = -1;
-        i = id + 8;
-    elseif(result(i) == 0)
-        de_bits(i) = 0;
-    else
-        id = i;
-        tmp = result(i);
-        de_bits(i) = 1;    
-    end 
-    i = i + 1;
-end
-
+disp("Orginal bit : ");
 disp(bits);
-disp('Demodulation : ');
-disp(de_bits);
+
+disp("Demodulation: ");
+disp(ans_bits);
+  
+
+
+
+
