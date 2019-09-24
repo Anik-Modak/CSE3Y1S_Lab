@@ -1,84 +1,88 @@
+clc;
 clear;
-bits = [1,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0];
+close all;
 
-prompt = 'What is the voltage? ';
-voltage = input(prompt);
+bits = [ 1 1 0 0 0 0 0 0 0 0 0 0 0 1];
+amp = input("Enter the amplitude: ");
+bit_rate = input("Enter the bit_rate: ");
 
-sign = 1;
-tmp = voltage;
+pre_vol = 1;
+voltage = pre_vol * amp;
 len = length(bits);
-time = 0 : len;
+Time = len/bit_rate;
+sampling_frquency = 10000;
 
-cnt = 0;
-for i = 1 : len
-    if(bits(i)== 0)
-        cnt = cnt + 1;
-        if(cnt == 4)
-            bits(i) = -1;
-            cnt = 0;
-        end
+zero = 0;
+one = 0;
+for i = 1:len
+    if bits(i) == 0
+        zero = zero + 1;
     else
-        cnt = 0;
+        one = one + 1;
+        zero = 0;
     end
-end
-
-voltage = tmp*sign;
-pbit = [tmp 0 0 tmp];
-nbit = [-tmp 0 0 -tmp];
-result = zeros(len+1, 1);
-
-cnt = 0;
-i = 1;
-while(i <= len)
-    if(bits(i)==1)
-        cnt = cnt + 1;
-        result(i) = voltage;
-        voltage = -voltage;
-    elseif(bits(i)==0)
-        result(i) = 0;
-    else
-        bits(i) = 0;
-        if(mod(cnt, 2)==0)
-            if(voltage < 0)
-                result(i-3:i) = nbit;
-            else
-                result(i-3:i) = pbit;
-            end
-            voltage = -voltage;
+    
+    if zero > 3
+        if mod(one, 2)==0
+            y_level(i) = -voltage;
+            voltage = y_level(i);
+            y_level(i-3) = voltage;
         else
-            if(voltage < 0)
-                result(i) = tmp;
-            else
-                result(i) = -tmp
-            end
-            cnt = cnt + 1;
+            y_level(i) = voltage;
         end
+        zero = one = 0;
+    elseif bits(i)==0
+        y_level(i) = 0;
+    else 
+        y_level(i) = -voltage;
+        voltage = y_level(i);
     end
-    i = i + 1;
+end
+  
+%Modulation
+time = 0: 1/sampling_frquency:Time;
+x = 1;
+for i = 1:length(time)
+  result(i) = y_level(x);
+  if bit_rate * time(i) >= x;
+    x = x + 1;
+  end
 end
 
-stairs(time, result);
-axis([0 len -tmp*2 tmp*2]);
+plot(time, result, 'Linewidth', 2);
+axis([0 Time -amp*2 amp*2]);
+grid on;
+title('HDB3');
 
-%decoding
-de_bits = zeros(1,len);
-tmp = result(1);
-id  = 0;
-
-i = 1;
-while(i <= len)
-    if(result(i) == 0)
-        de_bits(i) = 0;
-    elseif tmp ~= result(i)
-        i = id + 4;
+%Demodulation
+x = 1;
+for i = 1:length(time)
+  if bit_rate * time(i) >= x
+    tmp = result(i)/amp;
+    if tmp == 0
+      ans_bits(x) = 0;
     else
-        id = i;
-        tmp = result(i);
-        de_bits(i) = 1;    
+      ans_bits(x) = 1;
+      if tmp==pre_vol && x > 3
+           ans_bits(x) = 0;
+           ans_bits(x-3) = 0;
+      end 
     end
-    i = i + 1;
+    
+    if tmp ~= 0
+      pre_vol = tmp;
+    end
+    x = x + 1;
+  end
 end
 
+disp("Orginal bit : ");
 disp(bits);
-disp('Demodulation : ');
-disp(de_bits);
+
+disp("Demodulation: ");
+disp(ans_bits);
+  
+
+
+
+

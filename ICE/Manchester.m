@@ -1,73 +1,69 @@
+clc;
 clear;
+close all;
 
 bits = [0,1,0,0,1,1];
+amp = input("Enter the amplitude: ");
+bit_rate = input("Enter the bit_rate: ");
 
-prompt = 'What is the voltage? ';
-voltage = input(prompt);
-bit_rate=0.5;
-sign = -1;
+len = length(bits);
+Time = len/bit_rate;
+sampling_frquency = 10000;
 
-
-tmp = voltage;
 in = 1;
-voltage = sign*voltage;
-
-for i = 1:length(bits)
-    if(bits(i)==0)
-        y_level(in) = voltage;
-        y_level(in+1) = -voltage;
-    else
-        y_level(in) = -voltage;
-        y_level(in+1) = voltage;
-    end
-    in = in + 2;
+for i = 1:len
+  if bits(i) == 0
+    amplitude(in) = amp;
+    amplitude(in+1) = -amp;
+  else
+    amplitude(in) = -amp;
+    amplitude(in+1) = amp;
+  end
+  in = in + 2;
 end
-
-frequency = 1000;
-voltage=tmp;
-bit_rate = bit_rate*2;
-Time=length(bits)*2/bit_rate;
-dt = 1/frequency;
-time = 0:dt:Time;
-
+  
+%Modulation
+bit_rate = bit_rate * 2;
+time = 0: 1/sampling_frquency:Time;
 x = 1;
 for i = 1:length(time)
-    result(i)= y_level(x);
-    if time(i)*bit_rate>=x
-        x= x+1;
-    end
+  result(i) = amplitude(x);
+  if bit_rate * time(i) >= x;
+    x = x + 1;
+  end
 end
 
-
-plot(time,result);
-axis([0 Time -voltage*2 voltage*2]);
-
-
-% demodulation
-i=1;
-in=1;
-st=1;
-tmp=1*sign;
-
-for j=1:length(time)
-    dm = result(j)/voltage;
-    if time(j)*bit_rate>=i
-        
-        if mod(in,2)==1
-            if dm ==tmp
-                ans_bits(st)=0;
-            else
-                ans_bits(st)=1;
-            end
-            st = st + 1;
-        end
-        
-        i = i + 1;
-        in = in + 1;
-    end
-end
-
+plot(time, result, 'Linewidth', 2);
+axis([0 Time -amp*2 amp*2]);
 title('Manchester');
+grid on;
+
+%Demodulation
+st = 1;
+in = 1;
+x = 1;
+for i = 1:length(time)
+  if bit_rate * time(i) >= x
+    if mod(in, 2)==1
+      if(result(i) == amp)
+        ans_bits(st) = 0;
+      else
+        ans_bits(st) = 1;
+      end
+      st = st + 1;
+     end
+    x = x + 1;
+    in = in + 1;
+  end
+end
+
+disp("Orginal bit : ");
 disp(bits);
-disp('Demodulation : ');
+
+disp("Demodulation: ");
 disp(ans_bits);
+  
+
+
+
+

@@ -1,54 +1,59 @@
-clear
-bits = [0,1,1,0,1,0,1,0,1,1,1,1];
+clc;
+clear;
+close all;
 
-for i = 1:length(bits)
-    if(bits(i)==1) 
-        amplitude(i) = -2;
-    else 
-        amplitude(i) = 2;
-    end
-    
+bits = [0,1,0,0,1,1,1,0];
+amp = input("Enter the amplitude: ");
+bit_rate = input("Enter the bit_rate: ");
+
+sign = -1;
+len = length(bits);
+Time = len/bit_rate;
+sampling_frquency = 10000;
+
+for i = 1:len
+  if bits(i) == 1
+    amplitude(i) = sign * amp;
+  else
+    amplitude(i) = amp;
+  end
 end
-
-
-
-bitrate = 1;
-Time=12  
-
-sampling_frequency = 150;
-
-time = 0:bitrate/sampling_frequency:Time;
-
+  
+%Modulation
+time = 0: 1/sampling_frquency:Time;
 x = 1;
-
 for i = 1:length(time)
-    y_value(i)= amplitude(x);
-    if time(i)>=x
-        x= x+1;
-    end
+  result(i) = amplitude(x);
+  if bit_rate * time(i) >= x;
+    x = x + 1;
+  end
 end
-     
 
-plot(time,y_value);
-axis([0 Time -4 6]);
+plot(time, result, 'Linewidth', 2);
+axis([0 Time -1.5*amp amp*1.5]);
+grid on;
+title('NRZ_L');
 
-
-% demodulation
+%Demodulation
 x = 1;
-
 for i = 1:length(time)
-    if time(i)>x
-        x = x + 1;
-        ans_bits(x) = 1;
-        if(y_value(i)>0)
-            ans_bits(x) = 0;
-        end
-        %ans_bits(x) = y_value(i);
+  if bit_rate * time(i) >= x
+    if(result(i) < 0)
+      ans_bits(x) = 1;
+    else
+      ans_bits(x) = 0;
     end
+    x = x + 1;
+  end
 end
 
-title('NRZ-L');
-disp('Demodulation : ')
-disp(ans_bits)
+disp("Orginal bit : ");
+disp(bits);
+
+disp("Demodulation: ");
+disp(ans_bits);
+  
+
+
 
 

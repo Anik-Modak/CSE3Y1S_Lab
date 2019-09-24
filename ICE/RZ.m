@@ -1,76 +1,70 @@
+clc;
 clear;
-bits = [0,1,0,0,1];
+close all;
 
-prompt = 'What is the voltage? ';
-voltage = input(prompt);
+bits = [0,1,1,0,1,0,1,0,1,1,1,1];
+amp = input("Enter the amplitude: ");
+bit_rate = input("Enter the bit_rate: ");
 
-prompt = 'What is the bit_rate? ';
-bit_rate = input(prompt);
-
-frequency = 1000;
 sign = 1;
+len = length(bits);
+Time = len/bit_rate;
+sampling_frquency = 10000;
 
-
-tmp=voltage;
 in = 1;
-voltage = voltage*sign;
-
-for i = 1:length(bits)
-    if(bits(i)==0)
-        y_level(in) = voltage;
-        y_level(in+1) = 0;
-    else
-        y_level(in) = -voltage;
-        y_level(in+1) = 0;
-    end
-    in = in + 2;
+for i = 1:len
+  if bits(i) == 0
+    amplitude(in) = sign * amp;
+    amplitude(in+1) = 0;
+  else
+    amplitude(in) = -sign*amp;
+    amplitude(in+1) = 0;
+  end
+  in = in + 2;
 end
-
-voltage=tmp;
-bit_rate = bit_rate*2;
-Time=length(bits)*2/bit_rate;
-dt = 1/frequency;
-time = 0:dt:Time;
-
+  
+%Modulation
+bit_rate = bit_rate * 2;
+time = 0: 1/sampling_frquency:Time;
 x = 1;
-
 for i = 1:length(time)
-    y_value(i)= y_level(x);
-    if time(i)*bit_rate>=x
-        x= x+1;
-    end
+  result(i) = amplitude(x);
+  if bit_rate * time(i) >= x;
+    x = x + 1;
+  end
 end
 
-
-plot(time,y_value);
-axis([0 Time -voltage*2 voltage*2]);
-
-
-% demodulation
-
-i=1;
-in=1;
-st=1;
-tmp=1*sign;
-for j=1:length(time)
-    dm = y_value(j)/voltage;
-    if time(j)*bit_rate>=i
-        if mod(in,2)==1
-            if dm ==tmp
-                ans_bits(st)=0;
-            else
-                ans_bits(st)=1;
-            end
-            st = st + 1;
-        end
-        
-        i=i+1;
-        in= in+1;
-    end
-end
-
+plot(time, result, 'Linewidth', 2);
+axis([0 Time -amp*2 amp*2]);
 title('RZ');
-disp('Orginal bits : ')
+grid on;
+
+%Demodulation
+st = 1;
+in = 1;
+x = 1;
+for i = 1:length(time)
+  if bit_rate * time(i) >= x
+    if mod(in, 2)==1
+      if(result(i) == sign*amp)
+        ans_bits(st) = 0;
+      else
+        ans_bits(st) = 1;
+      end
+      st = st + 1;
+     end
+    x = x + 1;
+    in = in + 1;
+  end
+end
+
+disp("Orginal bit : ");
 disp(bits);
-disp('Demodulation : ');
+
+disp("Demodulation: ");
 disp(ans_bits);
+  
+
+
+
+
